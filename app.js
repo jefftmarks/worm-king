@@ -1,5 +1,5 @@
+require('dotenv').config();
 const Discord = require("discord.js");
-const { token } = require("./config.json");
 
 const Client = new Discord.Client({
 	intents: [
@@ -58,4 +58,4 @@ Client.on("messageCreate", (message) => {
 	}
 });
 
-Client.login(token);
+Client.login(process.env.DISCORD_TOKEN);
