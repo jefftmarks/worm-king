@@ -9,6 +9,12 @@ const ReadingSchema = new mongoose.Schema({
 	book: {
 		type: mongoose.Types.ObjectId,
 		ref: 'Book'
+	},
+	status: {
+		type: String,
+		required: true,
+		enum: ["unread", "started", "finished"],
+		default: "unread"
 	}
 });
 

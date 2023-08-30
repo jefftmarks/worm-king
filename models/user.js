@@ -6,6 +6,11 @@ const UserSchema = new mongoose.Schema({
 		required: true,
 		unique: true
 	},
+	discord_id: {
+		type: String,
+		required: true,
+		unique: true
+	},
 	readings: [{
 		type: mongoose.Types.ObjectId,
 		ref: 'Reading'

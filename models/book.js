@@ -10,9 +10,15 @@ const BookSchema = new mongoose.Schema({
 		required: true
 	},
 	picked_by: {
-		type: mongoose.Types.ObjectId,
-		ref: 'User',
+		type: String,
 		required: true,
+	},
+	read_date: {
+		type: String,
+		required: true,
+	},
+	current: {
+		type: Boolean
 	},
 	readings: [{
 		type: mongoose.Types.ObjectId,
