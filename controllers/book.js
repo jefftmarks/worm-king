@@ -1,14 +1,39 @@
 const Book = require('../models/book');
+const { fieldsMapToObject } = require('../utils');
+const { createReadingsOnCreation } = require('../controllers/reading');
 
-const createBook = async () => {
+const createBook = async (fields) => {
+	const fieldsObj = fieldsMapToObject(fields);
+	const {
+		titleInput,
+		authorInput,
+		pickedByInput,
+		monthInput,
+	} = fieldsObj;
+
+	const mostRecentBook = await Book.findOne({ current: true});
+
+	if (mostRecentBook) {
+		mostRecentBook.current = false;
+		mostRecentBook.save();
+	}
+
 	const book = await Book.create({
-		title: "Open",
-		author: "Andre Agassi",
-		picked_by: "64eaa3beeacc81d043cd4f3f"
+		title: titleInput,
+		author: authorInput,
+		picked_by: pickedByInput,
+		read_date: monthInput,
+		current: true
 	});
 
-	if (book) {
-		book.save();
+	if (!book) {
+		return;
+	}
+
+	const readings = await createReadingsOnCreation(book);
+
+	if (!readings) {
+		return;
 	}
 
 	return book;

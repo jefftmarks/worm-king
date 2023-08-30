@@ -3,6 +3,8 @@ const connectDB = require('./db/connect');
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { createBook } = require('./controllers/book');
+const { createUser } = require('./controllers/user');
  
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -26,31 +28,54 @@ for (const folder of commandFolders) {
 }
 
 client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
+	if (interaction.isChatInputCommand()) {
+		const command = interaction.client.commands.get(interaction.commandName);
 
-	const command = interaction.client.commands.get(interaction.commandName);
-
-	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
-		return;
-	}
-
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-		} else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		if (!command) {
+			console.error(`No command matching ${interaction.commandName} was found.`);
+			return;
 		}
+	
+		try {
+			await command.execute(interaction);
+		} catch (error) {
+			console.error(error);
+			if (interaction.replied || interaction.deferred) {
+				await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+			} else {
+				await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+			}
+		}
+	} else if (interaction.isModalSubmit()) {
+			switch(interaction.customId) {
+				case "createBook":
+					const book = await createBook(interaction.fields.fields);
+
+					if (!book) {
+						await interaction.reply({ content: 'ERROR!'});
+					}
+
+					await interaction.reply({ content: `**${book.title}** successfully created!`});
+					break;
+				case "createUser":
+					const user = await createUser(interaction.fields.fields);
+
+					if (!user) {
+						await interaction.reply({ content: 'ERROR!'});
+					}
+
+					await interaction.reply({ content: `**${user.username}** successfully created!`});
+					break;
+				default:
+					interaction.reply("ERROR!");
+			}
+	} else {
+		interaction.reply("ERROR!");
 	}
 });
 
 client.once(Events.ClientReady, async c => {
-	const db = await connectDB(process.env.MONGO_URI);
-
-	if (!db) await interaction.reply("ERROR!");
+	await connectDB(process.env.MONGO_URI);
 	
 	console.log('Worm king is now online: ' + c.user.tag);
 });

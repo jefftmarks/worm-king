@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Book = require('../../models/book');
+const User = require('../../models/user');
 const { formatDate } = require('../../utils');
 
 const BOOKMOJIS = ['📘','📕','📗','📙'];
@@ -18,12 +19,20 @@ module.exports = {
 		const entries = [];
 
 		for (let i = 0; i < books.length; i++) {
-			const { title, author, picked_by, read_date, current } = books[i];
+			const {
+				title,
+				author,
+				picked_by,
+				read_date,
+				current
+			} = books[i];
+
+			const user = await User.findOne({ discord_id: picked_by });
 	
 			entries.push(`
 🪱${current ? '📖' : BOOKMOJIS[i % 4]}  **${title}**
               by ${author}
-              picked by ${picked_by} (${formatDate(read_date)})
+              picked by ${user.username} (${formatDate(read_date)})
 			`);
 		}
 

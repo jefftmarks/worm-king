@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const BookSchema = new mongoose.Schema({
 	title: {
 		type: String,
-		required: true
+		required: true,
+		unique: true
 	},
 	author: {
 		type: String,
@@ -16,9 +17,12 @@ const BookSchema = new mongoose.Schema({
 	read_date: {
 		type: String,
 		required: true,
+		unique: true
 	},
 	current: {
-		type: Boolean
+		type: Boolean,
+		required: true,
+		default: true,
 	}
 });
 

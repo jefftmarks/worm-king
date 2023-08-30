@@ -1,20 +1,21 @@
 const Reading = require('../../models/reading');
 const User = require('../../models/user');
 const Book = require('../../models/book');
+const buildBookSelector = require('../../components/book-selector');
+const buildStatusSelector = require('../../components/status-selector');
+const {
+	SlashCommandBuilder,
+	ActionRowBuilder,
+	ComponentType
+} = require('discord.js');
+
+const BOOKMOJIS = ['📘','📕','📗','📙'];
 
 const STATMOJIS = {
 	unread: { emoji: '🟥', phrase: 'Just read...' },
 	started: { emoji: '🟨', phrase: 'Keep up the good work, slug!' },
 	finished: { emoji: '🟩', phrase: 'The problem of leadership is inevitably: Who will play God?' } 
 };
-
-const {
-	SlashCommandBuilder,
-	ActionRowBuilder,
-	StringSelectMenuBuilder,
-	StringSelectMenuOptionBuilder,
-	ComponentType
-} = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -29,40 +30,16 @@ module.exports = {
 			await interaction.reply("ERROR!");
 		}
 
-		const bookSelector = new StringSelectMenuBuilder()
-			.setCustomId('book')
-			.setPlaceholder('Book Title');
-
-		books.forEach((book) => {
-			bookSelector.addOptions(
-				new StringSelectMenuOptionBuilder()
-					.setLabel(book.title)
-					.setValue(book.id)
-			)
-		});
+		const bookSelector = buildBookSelector(books);
 
 		const bookRow = new ActionRowBuilder()
 			.addComponents(bookSelector);
 
-		const statusSelector = new StringSelectMenuBuilder()
-			  .setCustomId('status')
-				.setPlaceholder(`Update Reading Status`)
-				.addOptions(
-					new StringSelectMenuOptionBuilder()
-						.setLabel('unread')
-						.setValue('unread'),
-					new StringSelectMenuOptionBuilder()
-						.setLabel('started')
-						.setValue('started'),
-					new StringSelectMenuOptionBuilder()
-						.setLabel('finished')
-						.setValue('finished'),
-				);
+		const statusSelector = buildStatusSelector();
 
 		const statusRow = new ActionRowBuilder()
 			.addComponents(statusSelector);
-			
-
+		
 		const response = await interaction.reply({
 			content: '🪱 *Select a book, worm!*',
 			components: [bookRow],
@@ -86,7 +63,9 @@ module.exports = {
 			const currentStatus = reading.status;
 
 			const secondResponse = await i.update({
-				content: `**${selectedBook.title}**\n${STATMOJIS[currentStatus].emoji} current reading status: ${currentStatus}`,
+				content: `
+					${STATMOJIS[currentStatus].emoji} **${selectedBook.title}**, current status: ${currentStatus}
+				`,
 				components: [statusRow],
 				ephemeral: true
 			});
@@ -111,10 +90,9 @@ module.exports = {
 
 				await j.update({
 					content: `
-*🪱 ${STATMOJIS[selectedStatus].phrase}*
+${STATMOJIS[selectedStatus].emoji} **${selectedBook.title}**, ${selectedStatus} 
 
-**${selectedBook.title}**
-${STATMOJIS[selectedStatus].emoji} updated reading status: ${selectedStatus}
+*🪱 ${STATMOJIS[selectedStatus].phrase}*
 					`,
 					components: [],
 					ephemeral: true
