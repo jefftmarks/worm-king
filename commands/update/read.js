@@ -1,8 +1,6 @@
-require('dotenv').config();
-const connectDB = require('../../db/connect');
-const Book = require('../../models/book');
 const Reading = require('../../models/reading');
 const User = require('../../models/user');
+const Book = require('../../models/book');
 
 const STATMOJIS = {
 	unread: { emoji: '🟥', phrase: 'Just read...' },
@@ -23,11 +21,7 @@ module.exports = {
 		.setName('read')
 		.setDescription('Update a reading status'),
 	async execute(interaction) {
-		const db = await connectDB(process.env.MONGO_URI);
-
-		if (!db) {
-			await interaction.reply("ERROR!");
-		}
+		const user = await User.findOne({ discord_id: interaction.user.id });
 
 		const books = await Book.find().sort({ read_date: 'desc' });
 
@@ -35,21 +29,22 @@ module.exports = {
 			await interaction.reply("ERROR!");
 		}
 
-		const { user } = interaction
-
-		const bookSelect = new StringSelectMenuBuilder()
-		.setCustomId('book')
-		.setPlaceholder('Book Title');
+		const bookSelector = new StringSelectMenuBuilder()
+			.setCustomId('book')
+			.setPlaceholder('Book Title');
 
 		books.forEach((book) => {
-			bookSelect.addOptions(
+			bookSelector.addOptions(
 				new StringSelectMenuOptionBuilder()
 					.setLabel(book.title)
 					.setValue(book.id)
 			)
 		});
 
-		const statusSelect = new StringSelectMenuBuilder()
+		const bookRow = new ActionRowBuilder()
+			.addComponents(bookSelector);
+
+		const statusSelector = new StringSelectMenuBuilder()
 			  .setCustomId('status')
 				.setPlaceholder(`Update Reading Status`)
 				.addOptions(
@@ -63,64 +58,68 @@ module.exports = {
 						.setLabel('finished')
 						.setValue('finished'),
 				);
+
+		const statusRow = new ActionRowBuilder()
+			.addComponents(statusSelector);
 			
-		const firstRow = new ActionRowBuilder().addComponents(bookSelect);
-		const secondRow = new ActionRowBuilder().addComponents(statusSelect);
 
 		const response = await interaction.reply({
-			content: 'Select a book, worm!',
-			components: [firstRow, secondRow]
+			content: '🪱 *Select a book, worm!*',
+			components: [bookRow],
+			ephemeral: true
 		});
 
 		const collectorFilter = i => i.user.id === interaction.user.id;
 
-		const collector = response.createMessageComponentCollector({
+		const collector = await response.createMessageComponentCollector({
 			componentType: ComponentType.StringSelect,
-			filter: collectorFilter,
-			time: 3_600_000
-		})
+			time: 600_000,
+			filter: collectorFilter
+		});
 
 		collector.on('collect', async i => {
-			console.log(i.values)
-			// const bookId = i.values[0];
-			// const dbUser = await User.findOne({ discord_id: user.id });
+			const selectedBook = books.find((book) => book.id === i.values[0]);
+
+			collector.stop();
 			
-			// const query = {
-			// 	user: dbUser.id,
-			// 	book: bookId 
-			// };
+			const reading = await Reading.findOne({ user: user.id, book: selectedBook.id });
+			const currentStatus = reading.status;
 
-			// const reading = await Reading.findOneAndUpdate(query, query, { upsert: true });
-				
-			// if (!reading) {
-			// 	await i.reply("ERROR!");
-			// }
-			
-			// const { status } = reading;
+			const secondResponse = await i.update({
+				content: `**${selectedBook.title}**\n${STATMOJIS[currentStatus].emoji} current reading status: ${currentStatus}`,
+				components: [statusRow],
+				ephemeral: true
+			});
 
-// 			const wormResponse = `
-// ${STATMOJIS[status].emoji} Status: ${status}
+			const secondCollector = await secondResponse.createMessageComponentCollector({
+				componentType: ComponentType.StringSelect,
+				time: 600_000,
+				filter: collectorFilter
+			})
 
-// 🪱 *${STATMOJIS[status].phrase}*
-// 			`;
-			// const statusResponse = await i.reply({
-			// 	content: wormResponse,
-			// 	components: [secondRow]
-			// });
+			secondCollector.on('collect', async j => {
+				const selectedStatus = j.values[0];
 
-			// try {
-			// 	const statusCollector = await statusResponse.createMessageComponentCollector({
-			// 		componentType: ComponentType.StringSelect,
-			// 		filter: collectorFilter,
-			// 		time: 600_000
-			// 	});
+				secondCollector.stop();
 
-			// 	statusCollector.on('collect', async j => {
-			// 		console.log(j.values);
-			// 	});
-			// } catch (error) {
-			// 		await interaction.editReply({ content: 'Confirmation not received within 1 minute, cancelling', components: [] });
-			// }
+				reading.status = selectedStatus;
+				await reading.save();
+
+				if (!reading) {
+					await j.reply("ERROR!");
+				}
+
+				await j.update({
+					content: `
+*🪱 ${STATMOJIS[selectedStatus].phrase}*
+
+**${selectedBook.title}**
+${STATMOJIS[selectedStatus].emoji} updated reading status: ${selectedStatus}
+					`,
+					components: [],
+					ephemeral: true
+				});
+			});
 		});
 	},
 };

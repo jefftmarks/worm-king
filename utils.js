@@ -5,10 +5,4 @@ const formatDate = (date) => {
 	return format(new Date(year, month - 1), 'MMMM yyyy');
 };
 
-// const getUserByDiscordId = async (members, discordId) => {
-// 	const user = await members.fetch(discordId);
-// 	console.log(user);
-// 	return { username: "jeff" };
-// };
-
 module.exports = { formatDate };

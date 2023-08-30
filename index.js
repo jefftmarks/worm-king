@@ -1,8 +1,9 @@
 require('dotenv').config();
+const connectDB = require('./db/connect');
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
-
+ 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.commands = new Collection();
@@ -47,8 +48,11 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 client.once(Events.ClientReady, async c => {
-	console.log('Worm king is now online: ' + c.user.tag);
+	const db = await connectDB(process.env.MONGO_URI);
 
+	if (!db) await interaction.reply("ERROR!");
+	
+	console.log('Worm king is now online: ' + c.user.tag);
 });
 
 client.login(process.env.DISCORD_TOKEN);

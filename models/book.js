@@ -19,11 +19,7 @@ const BookSchema = new mongoose.Schema({
 	},
 	current: {
 		type: Boolean
-	},
-	readings: [{
-		type: mongoose.Types.ObjectId,
-		ref: 'Reading'
-	}]
+	}
 });
 
 module.exports = mongoose.model('Book', BookSchema);
