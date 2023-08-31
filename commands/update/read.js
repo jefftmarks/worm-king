@@ -9,12 +9,10 @@ const {
 	ComponentType
 } = require('discord.js');
 
-const BOOKMOJIS = ['📘','📕','📗','📙'];
-
 const STATMOJIS = {
 	unread: { emoji: '🟥', phrase: 'Just read...' },
 	started: { emoji: '🟨', phrase: 'Keep up the good work, slug!' },
-	finished: { emoji: '🟩', phrase: 'The problem of leadership is inevitably: Who will play God?' } 
+	finished: { emoji: '🟩', phrase: 'We have that bright Infinity all around us, that Golden Path of forever to which we can continually pledge our puny but inspired allegiance' } 
 };
 
 module.exports = {

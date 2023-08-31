@@ -27,4 +27,28 @@ const createUser = async (fields) => {
 	return user;
 };
 
-module.exports = { createUser };
+const formatUsername = (nickname) => {
+	return nickname.match(/^[^{}()\[\]]*/)[0].trim();
+};
+
+const updateUsernames = async (interaction) => {
+	const users = await User.find();
+
+	for (let i = 0; i < users.length; i++) {
+		const user = users[i];
+
+		let member;
+		
+		try {
+			member = await interaction.guild.members.fetch(user.discord_id);
+
+			const { id, nickname } = member;
+			const formattedName = formatUsername(nickname);
+			await User.findOneAndUpdate({ discord_id: id }, { username: formattedName });
+		} catch (error) {
+			continue;
+		}
+	}
+};
+
+module.exports = { createUser, updateUsernames };

@@ -5,6 +5,7 @@ const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { createBook } = require('./controllers/book');
 const { createUser } = require('./controllers/user');
+const User = require('./models/user');
  
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -28,6 +29,13 @@ for (const folder of commandFolders) {
 }
 
 client.on(Events.InteractionCreate, async interaction => {
+	const users = await User.find();
+	const ids = users.map((user) => user.discord_id);
+
+	if (!ids.includes(interaction.user.id)) {
+		interaction.reply("READ OR GTFO!");
+	}
+
 	if (interaction.isChatInputCommand()) {
 		const command = interaction.client.commands.get(interaction.commandName);
 
@@ -69,8 +77,6 @@ client.on(Events.InteractionCreate, async interaction => {
 				default:
 					interaction.reply("ERROR!");
 			}
-	} else {
-		interaction.reply("ERROR!");
 	}
 });
 

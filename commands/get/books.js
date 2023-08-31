@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const Book = require('../../models/book');
 const User = require('../../models/user');
 const { formatDate } = require('../../utils');
+const { updateUsernames } = require('../../controllers/user');
 
 const BOOKMOJIS = ['📘','📕','📗','📙'];
 
@@ -15,6 +16,8 @@ module.exports = {
 		if (!books) {
 			await interaction.reply("ERROR!");
 		}
+
+		updateUsernames(interaction);
 
 		const entries = [];
 

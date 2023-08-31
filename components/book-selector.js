@@ -1,5 +1,7 @@
 const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('discord.js');
 
+const BOOKMOJIS = ['📘','📕','📗','📙'];
+
 const buildBookSelector = (books) => {
 	selector = new StringSelectMenuBuilder()
 		.setCustomId('updateBook')
