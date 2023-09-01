@@ -24,7 +24,7 @@ module.exports = {
 			const reading = await Reading.findById(readings[i]);
 			const status = reading.status;
 			const book = await Book.findById(reading.book);
-
+s
 			const payload = {
 				date: book.read_date,
 				status: STATMOJIS[status]

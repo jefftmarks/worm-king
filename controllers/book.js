@@ -1,6 +1,6 @@
 const Book = require('../models/book');
 const { fieldsMapToObject } = require('../utils');
-const { createReadingsOnCreation } = require('../controllers/reading');
+const { createReadingsOnBookCreation } = require('../controllers/reading');
 
 const createBook = async (fields) => {
 	const fieldsObj = fieldsMapToObject(fields);
@@ -30,7 +30,7 @@ const createBook = async (fields) => {
 		return;
 	}
 
-	const readings = await createReadingsOnCreation(book);
+	const readings = await createReadingsOnBookCreation(book);
 
 	if (!readings) {
 		return;

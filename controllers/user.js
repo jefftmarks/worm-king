@@ -1,6 +1,5 @@
 const User = require('../models/user');
 const { fieldsMapToObject } = require('../utils');
-const { createReadingsOnCreation } = require('../controllers/reading');
 
 const createUser = async (fields) => {
 	const fieldsObj = fieldsMapToObject(fields);
@@ -15,12 +14,6 @@ const createUser = async (fields) => {
 	});
 
 	if (!user) {
-		return;
-	}
-
-	const readings = await createReadingsOnCreation(user);
-
-	if (!readings) {
 		return;
 	}
 

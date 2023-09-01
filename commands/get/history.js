@@ -23,6 +23,7 @@ module.exports = {
 			const readings = book.readings;
 
 			const emojis = [];
+			console.log(book);
 
 			for (let j = 0; j < readings.length; j++) {
 				const reading = await Reading.findById(readings[j]);

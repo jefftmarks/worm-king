@@ -2,21 +2,21 @@ const Reading = require('../models/reading');
 const User = require('../models/user');
 const Book = require('../models/book');
 
-const createReadingsOnCreation = async (item) => {
-	const isBook = item.constructor.modelName === "Book";
+const createReadingsOnBookCreation = async (book) => {
+	const users = await User.find();
 
-	const collection = isBook ? await User.find() : await Book.find();
-
-	if (!collection) {
+	if (!users) {
 		return;
 	}
 
 	let readings = [];
 
-	for (let i = 0; i < collection.length; i++) {
+	for (let i = 0; i < users.length; i++) {
+		const user = users[i];
+
 		const reading = await Reading.create({
-			book: isBook ? item.id : collection[i].id,
-			user: isBook ? collection[i].id : item.id,
+			book: book.id,
+			user: user.id,
 			status: 'unread'
 		});
 
@@ -24,10 +24,9 @@ const createReadingsOnCreation = async (item) => {
 			readings = null;
 			break;
 		}
-
-		current_user = isBook ? collection[i] : item;
-		current_user.readings.push(reading.id);
-		await current_user.save();
+		
+		user.readings.push(reading.id);
+		await user.save();
 
 		readings.push(reading);
 	}
@@ -35,4 +34,4 @@ const createReadingsOnCreation = async (item) => {
 	return readings;
 };
 
-module.exports = { createReadingsOnCreation };
+module.exports = { createReadingsOnBookCreation };
