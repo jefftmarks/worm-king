@@ -24,7 +24,6 @@ module.exports = {
 			const reading = await Reading.findById(readings[i]);
 			const status = reading.status;
 			const book = await Book.findById(reading.book);
-s
 			const payload = {
 				date: book.read_date,
 				status: STATMOJIS[status]
@@ -40,7 +39,7 @@ s
 		})
 			.forEach((payload) => {
 				entries.push(payload.status);
-			})
+			});
 
 		await interaction.reply(entries.join(''));
 	},
