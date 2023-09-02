@@ -30,6 +30,9 @@ module.exports = {
 		}
 
 
-		await interaction.reply(entries.join('\n'));
+		await interaction.reply({
+			content: entries.join('\n'),
+			ephemeral: true
+		});
 	},
 };

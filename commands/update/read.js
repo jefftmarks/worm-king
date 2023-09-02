@@ -20,15 +20,24 @@ module.exports = {
 		.setName('read')
 		.setDescription('Update a reading status'),
 	async execute(interaction) {
-		const user = await User.findOne({ discord_id: interaction.user.id });
+		const user = await User.findOne({ discord_id: interaction.user.id })
+			.populate('readings');
 
-		const books = await Book.find().sort({ read_date: 'desc' });
+		const readings = user.readings;
 
-		if (!books) {
+		if (!readings) {
 			await interaction.reply("ERROR!");
 		}
 
-		const bookSelector = buildBookSelector(books);
+		for (const reading of readings) {
+			await reading.populate('book');
+		}
+
+		readings.sort((a, b) => {
+			return new Date(b.book.read_date) - new Date(a.book.read_date);
+		});
+
+		const bookSelector = buildBookSelector(readings);
 
 		const bookRow = new ActionRowBuilder()
 			.addComponents(bookSelector);
@@ -53,16 +62,14 @@ module.exports = {
 		});
 
 		collector.on('collect', async i => {
-			const selectedBook = books.find((book) => book.id === i.values[0]);
+			const selectedReading = readings.find((r) => r.book.id === i.values[0]);
+			const { status, book } = selectedReading;
 
-			collector.stop();
-			
-			const reading = await Reading.findOne({ user: user.id, book: selectedBook.id });
-			const currentStatus = reading.status;
+			collector.stop();;
 
 			const secondResponse = await i.update({
 				content: `
-					${STATMOJIS[currentStatus].emoji} **${selectedBook.title}**, current status: ${currentStatus}
+					${STATMOJIS[status].emoji} **${book.title}**, status: ${status}
 				`,
 				components: [statusRow],
 				ephemeral: true
@@ -79,16 +86,16 @@ module.exports = {
 
 				secondCollector.stop();
 
-				reading.status = selectedStatus;
-				await reading.save();
+				selectedReading.status = selectedStatus;
+				await selectedReading.save();
 
-				if (!reading) {
+				if (!selectedReading) {
 					await j.reply("ERROR!");
 				}
 
 				await j.update({
 					content: `
-${STATMOJIS[selectedStatus].emoji} **${selectedBook.title}**, ${selectedStatus} 
+${STATMOJIS[selectedStatus].emoji} **${book.title}**, status: ${selectedStatus} 
 
 *🪱 ${STATMOJIS[selectedStatus].phrase}*
 					`,

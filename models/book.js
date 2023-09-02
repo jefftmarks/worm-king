@@ -11,8 +11,8 @@ const BookSchema = new mongoose.Schema({
 		required: true
 	},
 	picked_by: {
-		type: String,
-		required: true,
+		type: mongoose.Types.ObjectId,
+		ref: 'User',
 	},
 	read_date: {
 		type: String,

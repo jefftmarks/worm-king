@@ -1,6 +1,5 @@
 const Reading = require('../models/reading');
 const User = require('../models/user');
-const Book = require('../models/book');
 
 const createReadingsOnBookCreation = async (book) => {
 	const users = await User.find();
@@ -11,9 +10,7 @@ const createReadingsOnBookCreation = async (book) => {
 
 	let readings = [];
 
-	for (let i = 0; i < users.length; i++) {
-		const user = users[i];
-
+	for (const user of users) {
 		const reading = await Reading.create({
 			book: book.id,
 			user: user.id,

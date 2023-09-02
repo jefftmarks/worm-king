@@ -1,20 +1,24 @@
 const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('discord.js');
 
-const BOOKMOJIS = ['📘','📕','📗','📙'];
+const STATMOJIS = {
+	unread: '🟥', 
+	started: '🟨', 
+	finished: '🟩',
+};
 
-const buildBookSelector = (books) => {
+const buildBookSelector = (readings) => {
 	selector = new StringSelectMenuBuilder()
 		.setCustomId('updateBook')
 		.setPlaceholder('Book Title');
 	
-	books.forEach((book, idx) => {
-	const { title, id, current } = book;
+	readings.forEach((reading) => {
+	const { book, status } = reading;
 	
 	selector.addOptions(
 		new StringSelectMenuOptionBuilder()
-			.setLabel(title)
-			.setValue(id)
-			.setEmoji(current ? '📖' : BOOKMOJIS[idx % 4])
+			.setLabel(book.title)
+			.setValue(book.id)
+			.setEmoji(STATMOJIS[status])
 	)
 	});
 

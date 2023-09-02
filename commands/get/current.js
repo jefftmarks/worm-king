@@ -1,6 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Book = require('../../models/book');
-const User = require('../../models/user');
 const { updateUsernames } = require('../../controllers/user');
 
 module.exports = {
@@ -18,12 +17,10 @@ module.exports = {
 
 		const { title, author, picked_by } = book;
 
-		const user = await User.findOne({ discord_id: picked_by });
-
 		await interaction.reply(`
 🪱📖  **${title}**
               by ${author}
-              picked by ${user.username}
+              picked by ${picked_by.username}
 		`);
 	},
 };
