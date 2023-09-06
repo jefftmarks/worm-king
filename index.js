@@ -6,6 +6,8 @@ const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { createBook } = require('./controllers/book');
 const { createUser } = require('./controllers/user');
 const User = require('./models/user');
+const Book = require('./models/book');
+const { createReadingsOnBookCreation } = require('./controllers/reading');
  
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -85,5 +87,7 @@ client.once(Events.ClientReady, async c => {
 	
 	console.log('Worm king is now online: ' + c.user.tag);
 });
+
+createReadingsOnBookCreation();
 
 client.login(process.env.DISCORD_TOKEN);

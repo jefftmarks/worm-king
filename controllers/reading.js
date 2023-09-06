@@ -1,7 +1,10 @@
 const Reading = require('../models/reading');
 const User = require('../models/user');
+const Book = require('../models/book');
 
-const createReadingsOnBookCreation = async (book) => {
+const createReadingsOnBookCreation = async () => {
+	const book = await Book.findById("64f7e4ee7bb8d95e09adf1bc")
+
 	const users = await User.find();
 
 	if (!users) {
@@ -24,6 +27,9 @@ const createReadingsOnBookCreation = async (book) => {
 		
 		user.readings.push(reading.id);
 		await user.save();
+
+		book.readings.push(reading);
+		await book.save();
 
 		readings.push(reading);
 	}
