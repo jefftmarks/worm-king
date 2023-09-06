@@ -7,7 +7,7 @@ module.exports = {
 		.setName('current')
 		.setDescription('Returns current book'),
 	async execute(interaction) {
-		const book = await Book.findOne({ current: true });
+		const book = await Book.findOne({ current: true }).populate('picked_by');
 
 		if (!book) {
 			await interaction.reply("ERROR!");
