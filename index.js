@@ -34,6 +34,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
 	if (!ids.includes(interaction.user.id)) {
 		interaction.reply("READ OR GTFO!");
+		return;
 	}
 
 	if (interaction.isChatInputCommand()) {
