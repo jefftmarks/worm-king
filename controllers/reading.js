@@ -1,10 +1,8 @@
 const Reading = require('../models/reading');
 const User = require('../models/user');
-const Book = require('../models/book');
+const { fieldsMapToObject } = require('../utils');
 
-const createReadingsOnBookCreation = async () => {
-	const book = await Book.findById("64f7e4ee7bb8d95e09adf1bc")
-
+const createReadingsOnBookCreation = async (book) => {
 	const users = await User.find();
 
 	if (!users) {
@@ -24,12 +22,6 @@ const createReadingsOnBookCreation = async () => {
 			readings = null;
 			break;
 		}
-		
-		user.readings.push(reading.id);
-		await user.save();
-
-		book.readings.push(reading);
-		await book.save();
 
 		readings.push(reading);
 	}
@@ -37,4 +29,18 @@ const createReadingsOnBookCreation = async () => {
 	return readings;
 };
 
-module.exports = { createReadingsOnBookCreation };
+const updateJournalEntry = async (fields) => {
+	const responseObj = fieldsMapToObject(fields);
+
+	let reading = null;
+
+	for (const key in responseObj) {
+		reading = await Reading.findById(key);
+		reading.journal = responseObj[key];
+		await reading.save();
+	}
+
+	return reading;
+};
+
+module.exports = { createReadingsOnBookCreation, updateJournalEntry };

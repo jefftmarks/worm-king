@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Book = require('../../models/book');
+const Reading = require('../../models/reading');
 
 const STATMOJIS = {
 	unread: '🟥', 
@@ -12,16 +13,15 @@ module.exports = {
 		.setName('history')
 		.setDescription('Returns reading record for all books'),
 	async execute(interaction) {
-		const books = await Book.find()
-			.populate('readings')
-			.sort({ read_date: 'asc' });
+		const books = await Book.find().sort({ read_date: 'asc' });
 
 		const entries = [];
 
 		for (const book of books) {
 			const emojis = [];
+			const readings = await Reading.find({ book: book.id });
 
-			for (const reading of book.readings) {
+			for (const reading of readings) {
 				const status = reading.status;
 				emojis.push(STATMOJIS[status]);
 			}

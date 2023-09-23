@@ -1,6 +1,5 @@
 const Reading = require('../../models/reading');
 const User = require('../../models/user');
-const Book = require('../../models/book');
 const buildBookSelector = require('../../components/book-selector');
 const buildStatusSelector = require('../../components/status-selector');
 const {
@@ -21,16 +20,11 @@ module.exports = {
 		.setDescription('Update a reading status'),
 	async execute(interaction) {
 		const user = await User.findOne({ discord_id: interaction.user.id })
-			.populate('readings');
 
-		const readings = user.readings;
+		const readings = await Reading.find({ user: user.id }).populate('book');
 
 		if (!readings) {
 			await interaction.reply("ERROR!");
-		}
-
-		for (const reading of readings) {
-			await reading.populate('book');
 		}
 
 		readings.sort((a, b) => {

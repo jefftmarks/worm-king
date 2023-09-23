@@ -13,8 +13,11 @@ const ReadingSchema = new mongoose.Schema({
 	status: {
 		type: String,
 		required: true,
-		enum: ["unread", "started", "finished"],
-		default: "unread"
+		enum: ['unread', 'started', 'finished'],
+		default: 'unread'
+	},
+	journal: {
+		type: String
 	}
 });
 
