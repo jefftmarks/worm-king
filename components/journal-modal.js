@@ -4,6 +4,7 @@ const {
 	TextInputStyle,
 	ActionRowBuilder,
 } = require('discord.js');
+const { decrypt } = require('../utils');
 
 const buildJournalModal = (reading) => {
 	const modal = new ModalBuilder()
@@ -14,7 +15,7 @@ const buildJournalModal = (reading) => {
 		.setCustomId(reading.id)
 		.setLabel("Keep track of your notes here:")
 		.setStyle(TextInputStyle.Paragraph)
-		.setValue(reading.journal)
+		.setValue(decrypt(reading.journal))
 		.setRequired(false)
 
 	const row = new ActionRowBuilder().addComponents(journalInput);

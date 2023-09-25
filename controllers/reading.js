@@ -1,6 +1,6 @@
 const Reading = require('../models/reading');
 const User = require('../models/user');
-const { fieldsMapToObject } = require('../utils');
+const { fieldsMapToObject, encrypt } = require('../utils');
 
 const createReadingsOnBookCreation = async (book) => {
 	const users = await User.find();
@@ -29,16 +29,28 @@ const createReadingsOnBookCreation = async (book) => {
 	return readings;
 };
 
-const updateJournalEntry = async (fields) => {
-	const responseObj = fieldsMapToObject(fields);
+const encryptedJournalObjectFromFields = async (map) => {
+	const obj = fieldsMapToObject(map);
+	
+	let journalObj = {
+		reading: null,
+		entry: null
+	};
 
-	let reading = null;
-
-	for (const key in responseObj) {
-		reading = await Reading.findById(key);
-		reading.journal = responseObj[key];
-		await reading.save();
+	for (const key in obj) {
+		journalObj.reading = key;
+		journalObj.entry = encrypt(obj[key]);
 	}
+
+	return journalObj;
+};
+
+const updateJournalEntry = async (fields) => {
+	const journalObj = await encryptedJournalObjectFromFields(fields);
+	const reading = await Reading.findById(journalObj.reading);
+
+	reading.journal = journalObj.entry;
+	await reading.save();
 
 	return reading;
 };
