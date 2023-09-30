@@ -1,6 +1,6 @@
 const Reading = require('../models/reading');
 const User = require('../models/user');
-const { fieldsMapToObject, encrypt } = require('../utils');
+const { fieldsMapToObject, encrypt, decrypt } = require('../utils');
 
 const createReadingsOnBookCreation = async (book) => {
 	const users = await User.find();
@@ -47,7 +47,7 @@ const encryptedJournalObjectFromFields = async (map) => {
 
 const updateJournalEntry = async (fields) => {
 	const journalObj = await encryptedJournalObjectFromFields(fields);
-	const reading = await Reading.findById(journalObj.reading);
+	const reading = await Reading.findById(journalObj.reading).populate('book');
 
 	reading.journal = journalObj.entry;
 	await reading.save();
@@ -55,4 +55,12 @@ const updateJournalEntry = async (fields) => {
 	return reading;
 };
 
-module.exports = { createReadingsOnBookCreation, updateJournalEntry };
+const printJournal = (reading) => {
+	const { book, journal } = reading;
+
+	const formattedEntry = `### ${book.title} by ${book.author}\n>>> ${decrypt(journal)}`
+
+	return formattedEntry
+};
+
+module.exports = { createReadingsOnBookCreation, updateJournalEntry, printJournal };

@@ -5,7 +5,7 @@ const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { createBook } = require('./controllers/book');
 const { createUser } = require('./controllers/user');
-const { updateJournalEntry } = require('./controllers/reading');
+const { updateJournalEntry, printJournal } = require('./controllers/reading');
 const User = require('./models/user');
  
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -83,7 +83,7 @@ client.on(Events.InteractionCreate, async interaction => {
 						await interaction.reply({ content: 'ERROR!'});
 					}
 
-					await interaction.reply({ content: "Journal updated!", ephemeral: true });
+					await interaction.reply({ content: printJournal(reading), ephemeral: true });
 					break;
 				default:
 					interaction.reply("ERROR!");
