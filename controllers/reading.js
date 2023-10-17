@@ -15,7 +15,8 @@ const createReadingsOnBookCreation = async (book) => {
 		const reading = await Reading.create({
 			book: book.id,
 			user: user.id,
-			status: 'unread'
+			status: 'unread',
+			journal: ''
 		});
 
 		if (!reading) {
