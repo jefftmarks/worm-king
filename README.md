@@ -6,7 +6,7 @@ Follow me on [GoodReads](https://www.goodreads.com/user/show/128988061-jeff)...
 
 ### Slash Commands
 
-####/help
+#### /help
 
 Returns list of available commands
 
@@ -18,13 +18,13 @@ Creates new user in database (admin only)
 
 ![create_user](screenshots/create_user.png)
 
-####/create_book
+#### /create_book
 
 Creates new book in database (admin only). Automatically assigns new book as the current book.
 
 ![create_book](screenshots/create_book.png)
 
-####/books
+#### /books
 
 Returns list of book club books
 
@@ -36,7 +36,7 @@ Returns the book we're currently reading
 
 ![current](screenshots/current.png)
 
-####/read
+#### /read
 
 Updates your reading status.
 - 🟥 Unread
@@ -46,25 +46,25 @@ Updates your reading status.
 ![read_1](screenshots/read_1.png)
 ![read_2](screenshots/read_2.png)
 
-####/journal
+#### /journal
 
 Keep track of your notes for each book.
 
 ![journal](screenshots/journal.png)
 
-####/stats
+#### /stats
 
 Share your personal reading stats.
 
 ![stats](screenshots/stats.png)
 
-####/wormle
+#### /wormle
 
 Share your personal reading stats in worm form.
 
 ![wormle](screenshots/wormle.png)
 
-####/history
+#### /history
 
 Returns the stats for your entire book club.
 
