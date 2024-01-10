@@ -12,7 +12,7 @@ Returns list of available commands
 
 ![help](screenshots/help.png)
 
-####/create_user
+#### /create_user
 
 Creates new user in database (admin only)
 
@@ -30,7 +30,7 @@ Returns list of book club books
 
 ![books](screenshots/books.png)
 
-####/current
+#### /current
 
 Returns the book we're currently reading
 
