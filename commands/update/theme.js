@@ -50,6 +50,8 @@ module.exports = {
 			user.theme = i.values[0]
 			await user.save()
 
+			const isClassic = user.theme === 'classic'
+
 			collector.stop();;
 			await i.update({
 				content: `Your personal block theme has been updated to ${isClassic ? 'Classic' : 'Irish'}`,
