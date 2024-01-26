@@ -19,9 +19,9 @@ module.exports = {
 		const entries = [];
 
 		const STATMOJIS = {
-			unread: '🟥', 
-			started: '🟨', 
-			finished: isClassic ? '🟩' : '☘️',
+			unread: isClassic ? '🟥' : '⬜', 
+			started: isClassic ? '🟨' : '🟧', 
+			finished: '🟩',
 		};
 
 		for (const reading of readings) {

@@ -10,9 +10,9 @@ const buildBookSelector = (readings, theme) => {
 	
 	const isClassic = theme === 'classic';
 	const STATMOJIS = {
-		unread: '🟥', 
-		started: '🟨', 
-		finished: isClassic ? '🟩' : '☘️',
+		unread: isClassic ? '🟥' : '⬜', 
+		started: isClassic ? '🟨' : '🟧', 
+		finished: '🟩',
 	};
 
 	selector.addOptions(

@@ -10,15 +10,15 @@ const buildStatusSelector = (theme) => {
 			new StringSelectMenuOptionBuilder()
 				.setLabel('unread')
 				.setValue('unread')
-				.setEmoji('🟥'),
+				.setEmoji(isClassic ? '🟥' : '⬜'),
 			new StringSelectMenuOptionBuilder()
 				.setLabel('started')
 				.setValue('started')
-				.setEmoji('🟨'),
+				.setEmoji(isClassic ? '🟨' : '🟧'),
 			new StringSelectMenuOptionBuilder()
 				.setLabel('finished')
 				.setValue('finished')
-				.setEmoji(isClassic ? '🟩' : '☘️')
+				.setEmoji('🟩')
 		);
 
 	return selector;
