@@ -1,6 +1,8 @@
 const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('discord.js');
 
-const buildStatusSelector = () => {
+const buildStatusSelector = (theme) => {
+	const isClassic = theme === 'classic';
+
 	selector = new StringSelectMenuBuilder()
 		.setCustomId('updateStatus')
 		.setPlaceholder(`Update Reading Status`)
@@ -16,7 +18,7 @@ const buildStatusSelector = () => {
 			new StringSelectMenuOptionBuilder()
 				.setLabel('finished')
 				.setValue('finished')
-				.setEmoji('🟩')
+				.setEmoji(isClassic ? '🟩' : '☘️')
 		);
 
 	return selector;

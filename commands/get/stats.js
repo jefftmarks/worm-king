@@ -2,18 +2,13 @@ const { SlashCommandBuilder } = require('discord.js');
 const User = require('../../models/user');
 const Reading = require('../../models/reading');
 
-const STATMOJIS = {
-	unread: '🟥', 
-	started: '🟨', 
-	finished: '🟩',
-};
-
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('stats')
 		.setDescription('Returns your personal reading stats'),
 	async execute(interaction) {
 		const user = await User.findOne({ discord_id: interaction.user.id });
+		const isClassic = user.theme === 'classic';
 
 		const readings = await Reading.find({ user: user.id }).populate('book');
 
@@ -22,6 +17,12 @@ module.exports = {
 		});
 
 		const entries = [];
+
+		const STATMOJIS = {
+			unread: '🟥', 
+			started: '🟨', 
+			finished: isClassic ? '🟩' : '☘️',
+		};
 
 		for (const reading of readings) {
 			entries.push(`${STATMOJIS[reading.status]} **${reading.book.title}**`)

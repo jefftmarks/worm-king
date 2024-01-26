@@ -8,18 +8,28 @@ const {
 	ComponentType
 } = require('discord.js');
 
-const STATMOJIS = {
-	unread: { emoji: '🟥', phrase: 'Just read...' },
-	started: { emoji: '🟨', phrase: 'Keep up the good work, slug!' },
-	finished: { emoji: '🟩', phrase: 'We have that bright Infinity all around us, that Golden Path of forever to which we can continually pledge our puny but inspired allegiance' } 
-};
-
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('read')
 		.setDescription('Update a reading status'),
 	async execute(interaction) {
-		const user = await User.findOne({ discord_id: interaction.user.id })
+		const user = await User.findOne({ discord_id: interaction.user.id });
+		const isClassic = user.theme === 'classic';
+
+		const STATMOJIS = {
+			unread: {
+				emoji: isClassic ? '🟥' : '⬜️',
+				phrase: 'Just read...'
+			},
+			started: {
+				emoji: isClassic ? '🟨' : '🟧',
+				phrase: 'Keep up the good work, slug!'
+			},
+			finished: {
+				emoji: isClassic ? '🟩' : '☘️',
+				phrase: 'We have that bright Infinity all around us, that Golden Path of forever to which we can continually pledge our puny but inspired allegiance'
+			} 
+		};
 
 		const readings = await Reading.find({ user: user.id }).populate('book');
 
@@ -31,12 +41,12 @@ module.exports = {
 			return new Date(b.book.read_date) - new Date(a.book.read_date);
 		});
 
-		const bookSelector = buildBookSelector(readings);
+		const bookSelector = buildBookSelector(readings, user.theme);
 
 		const bookRow = new ActionRowBuilder()
 			.addComponents(bookSelector);
 
-		const statusSelector = buildStatusSelector();
+		const statusSelector = buildStatusSelector(user.theme);
 
 		const statusRow = new ActionRowBuilder()
 			.addComponents(statusSelector);
