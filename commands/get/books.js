@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Book = require('../../models/book');
-const { formatDate } = require('../../utils');
+const { formatDate } = require('../../utils/utils');
 const { updateUsernames } = require('../../controllers/user')
 
 const BOOKMOJIS = ['📘','📕','📗','📙'];

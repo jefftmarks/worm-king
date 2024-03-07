@@ -1,5 +1,5 @@
 const User = require('../models/user');
-const { fieldsMapToObject } = require('../utils');
+const { fieldsMapToObject } = require('../utils/utils');
 
 const createUser = async (fields) => {
 	const fieldsObj = fieldsMapToObject(fields);

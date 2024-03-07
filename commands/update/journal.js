@@ -25,7 +25,7 @@ module.exports = {
 			return new Date(b.book.read_date) - new Date(a.book.read_date);
 		});
 
-		const bookSelector = buildBookSelector(readings);
+		const bookSelector = await buildBookSelector(readings);
 
 		const bookRow = new ActionRowBuilder()
 			.addComponents(bookSelector);

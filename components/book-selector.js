@@ -1,26 +1,22 @@
 const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('discord.js');
+const { getStatmojis } = require('../utils/emojifier');
 
-const buildBookSelector = (readings, theme) => {
+const buildBookSelector = async(readings) => {
 	selector = new StringSelectMenuBuilder()
 		.setCustomId('updateBook')
 		.setPlaceholder('Book Title');
 	
-	readings.forEach((reading) => {
-	const { book, status } = reading;
+	const statmojis = await getStatmojis()
 	
-	const isClassic = theme === 'classic';
-	const STATMOJIS = {
-		unread: isClassic ? '🟥' : '⬜', 
-		started: isClassic ? '🟨' : '🟧', 
-		finished: '🟩',
-	};
+	readings.forEach((reading) => {
+		const { book, status } = reading;
 
-	selector.addOptions(
-		new StringSelectMenuOptionBuilder()
-			.setLabel(book.title)
-			.setValue(book.id)
-			.setEmoji(STATMOJIS[status])
-	)
+		selector.addOptions(
+			new StringSelectMenuOptionBuilder()
+				.setLabel(book.title)
+				.setValue(book.id)
+				.setEmoji(statmojis.get(status))
+		)
 	});
 
 	return selector;

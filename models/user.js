@@ -10,12 +10,6 @@ const UserSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 		unique: true
-	},
-	theme: {
-		type: String,
-		required: true,
-		default: 'classic',
-		enum: ['classic', 'irish'],
 	}
 });
 

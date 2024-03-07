@@ -4,7 +4,7 @@ const {
 	TextInputStyle,
 	ActionRowBuilder,
 } = require('discord.js');
-const { decrypt } = require('../utils');
+const { decrypt } = require('../utils/utils');
 
 const buildJournalModal = (reading) => {
 	const modal = new ModalBuilder()

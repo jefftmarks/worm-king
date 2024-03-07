@@ -7,47 +7,37 @@ const {
 	ActionRowBuilder,
 	ComponentType
 } = require('discord.js');
+const { getStatmojis } = require('../../utils/emojifier');
+const { updateUsernames } = require('../../controllers/user');
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('read')
 		.setDescription('Update a reading status'),
 	async execute(interaction) {
+		await updateUsernames(interaction);
 		const user = await User.findOne({ discord_id: interaction.user.id });
-		const isClassic = user.theme === 'classic';
-
-		const STATMOJIS = {
-			unread: {
-				emoji: isClassic ? '🟥' : '⬜️',
-				phrase: 'Just read...'
-			},
-			started: {
-				emoji: isClassic ? '🟨' : '🟧',
-				phrase: 'Keep up the good work, slug!'
-			},
-			finished: {
-				emoji: isClassic ? '🟩' : '☘️',
-				phrase: 'We have that bright Infinity all around us, that Golden Path of forever to which we can continually pledge our puny but inspired allegiance'
-			} 
-		};
-
 		const readings = await Reading.find({ user: user.id }).populate('book');
+
+		const phraseMap = {
+			unread: "Just read...",
+			started: "Keep up the good work!",
+			finished: `A true worm! Congratulations, ${user.username}`
+		}
 
 		if (!readings) {
 			await interaction.reply("ERROR!");
-		}
+		}	
 
 		readings.sort((a, b) => {
 			return new Date(b.book.read_date) - new Date(a.book.read_date);
 		});
 
-		const bookSelector = buildBookSelector(readings, user.theme);
+		const bookSelector = await buildBookSelector(readings);
 
 		const bookRow = new ActionRowBuilder()
 			.addComponents(bookSelector);
-
-		const statusSelector = buildStatusSelector(user.theme);
-
+		const statusSelector = await buildStatusSelector();
 		const statusRow = new ActionRowBuilder()
 			.addComponents(statusSelector);
 		
@@ -69,11 +59,13 @@ module.exports = {
 			const selectedReading = readings.find((r) => r.book.id === i.values[0]);
 			const { status, book } = selectedReading;
 
-			collector.stop();;
+			collector.stop();
+
+			const statmojis = await getStatmojis();
 
 			const secondResponse = await i.update({
 				content: `
-					${STATMOJIS[status].emoji} **${book.title}**, status: ${status}
+					${statmojis.get(status)} **${book.title}**, status: ${status}
 				`,
 				components: [statusRow],
 				ephemeral: true
@@ -99,9 +91,9 @@ module.exports = {
 
 				await j.update({
 					content: `
-${STATMOJIS[selectedStatus].emoji} **${book.title}**, status: ${selectedStatus} 
+${statmojis.get(selectedStatus)} **${book.title}**, status: ${selectedStatus} 
 
-*🪱 ${STATMOJIS[selectedStatus].phrase}*
+*🪱 ${phraseMap[selectedStatus]}*
 					`,
 					components: [],
 					ephemeral: true

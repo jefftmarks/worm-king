@@ -1,39 +1,26 @@
 const User = require('../../models/user');
+const Theme = require('../../models/theme');
 const {
 	SlashCommandBuilder,
 	ActionRowBuilder,
-	ComponentType,
-	StringSelectMenuBuilder,
-	StringSelectMenuOptionBuilder
+	ComponentType
 } = require('discord.js');
+const buildThemeSelector = require('../../components/theme-selector');
+const { updateUsernames } = require('../../controllers/user')
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('theme')
 		.setDescription('Switch block themes'),
 	async execute(interaction) {
+		updateUsernames(interaction);
 		const user = await User.findOne({ discord_id: interaction.user.id })
-		const isClassic = user.theme === 'classic'
-
-		const themeSelector = new StringSelectMenuBuilder()
-		.setCustomId('updateTheme')
-		.setPlaceholder(`Update Block Theme`)
-		.addOptions(
-			new StringSelectMenuOptionBuilder()
-				.setLabel('Classic' + (isClassic ? ' ✅' : ''))
-				.setValue('classic')
-				.setEmoji('🇬🇳'),
-			new StringSelectMenuOptionBuilder()
-				.setLabel('Irish' + (!isClassic ? ' ✅' : ''))
-				.setValue('irish')
-				.setEmoji('🇮🇪')
-		);
-
+		const themeSelector = await buildThemeSelector();
 		const themeRow = new ActionRowBuilder()
 			.addComponents(themeSelector);
 		
 		const response = await interaction.reply({
-			content: 'Select your personal block theme',
+			content: 'Select a theme',
 			components: [themeRow],
 			ephemeral: true
 		});
@@ -46,16 +33,14 @@ module.exports = {
 			filter: collectorFilter
 		});
 
-		collector.on('collect', async i => {
-			user.theme = i.values[0]
-			await user.save()
-
-			const isClassic = user.theme === 'classic'
+		collector.on('collect', async i => {			
+			oldTheme = await Theme.findOneAndUpdate({ current: true}, { current: false});
+			newTheme = await Theme.findOneAndUpdate({ name: i.values[0]}, { current: true });
+			themeName = newTheme.name[0].toUpperCase() + newTheme.name.slice(1);
 
 			collector.stop();;
 			await i.update({
-				content: `Your personal block theme has been updated to ${isClassic ? 'Classic' : 'Irish'}`,
-				ephemeral: true,
+				content: `${user.username} updated the theme to ${themeName} ${newTheme.icon}`,
 				components: []
 			})
 		});

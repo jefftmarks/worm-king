@@ -7,6 +7,7 @@ const { createBook } = require('./controllers/book');
 const { createUser } = require('./controllers/user');
 const { updateJournalEntry, printJournal } = require('./controllers/reading');
 const User = require('./models/user');
+const Theme = require('./models/theme');
  
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 

@@ -1,6 +1,6 @@
 const Reading = require('../models/reading');
 const User = require('../models/user');
-const { fieldsMapToObject, encrypt, decrypt } = require('../utils');
+const { fieldsMapToObject, encrypt, decrypt } = require('../utils/utils');
 
 const createReadingsOnBookCreation = async (book) => {
 	const users = await User.find();

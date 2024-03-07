@@ -1,5 +1,5 @@
 const Book = require('../models/book');
-const { fieldsMapToObject } = require('../utils');
+const { fieldsMapToObject } = require('../utils/utils');
 const { createReadingsOnBookCreation } = require('../controllers/reading');
 
 const createBook = async (fields) => {

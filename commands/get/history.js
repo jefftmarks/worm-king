@@ -1,52 +1,31 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Book = require('../../models/book');
 const Reading = require('../../models/reading');
-const User = require('../../models/user');
+
+const { getStatmojis, sortStatmojis } = require('../../utils/emojifier');
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('history')
 		.setDescription('Returns reading record for all books'),
 	async execute(interaction) {
-		const user = await User.findOne({ discord_id: interaction.user.id });
-		const isClassic = user.theme === 'classic';
-
 		const books = await Book.find().sort({ read_date: 'asc' });
 
 		const entries = [];
+		const statmojis = await getStatmojis();
 
 		for (const book of books) {
-			const emojis = [];
+			const history = [];
 			const readings = await Reading.find({ book: book.id });
 
-			const STATMOJIS = {
-				unread: isClassic ? '🟥' : '⬜', 
-				started: isClassic ? '🟨' : '🟧', 
-				finished: '🟩',
-			};
-
 			for (const reading of readings) {
-				const status = reading.status;
-				emojis.push(STATMOJIS[status]);
+				history.push(statmojis.get(reading.status));
 			}
-
-			emojis.sort((a, b) => {
-				if (a === b) {
-					return 0;
-				} else if (['🟩', '☘️'].includes(a)) {
-					return -1;
-				} else if (['🟨', '🟧'].includes(a) && !['🟩', '☘️'].includes(b)) {
-					return -1;
-				} else if (['🟥', '⬜️'].includes(a)) {
-					return 1;
-				} else {
-					return 1;
-				}
-			});
+			sortedHistory = await sortStatmojis(history);
 
 			entries.push(`
 **${book.title}**
-${emojis.join('')}
+${sortedHistory.join('')}
 			`)
 		}
 
