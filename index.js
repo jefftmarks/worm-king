@@ -9,7 +9,11 @@ const { updateJournalEntry, printJournal } = require('./controllers/reading');
 const User = require('./models/user');
 const { modifyResponse } = require('./utils/themeHelper');
  
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+	intents: [
+		GatewayIntentBits.Guilds
+	]
+});
 
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
