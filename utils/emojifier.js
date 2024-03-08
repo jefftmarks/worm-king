@@ -11,7 +11,7 @@ const sortStatmojis = async (emojis) => {
 	const rank = await buildEmojiRanker();
 
 	emojis.sort((a, b) => {
-		return rank[a] - rank[b]
+		return rank[b] - rank[a]
 	});
 
 	return emojis;
@@ -28,4 +28,10 @@ const buildEmojiRanker = async () => {
 	return rankMap;
 };
 
-module.exports = { getStatmojis, sortStatmojis };
+const bookmojis = ['📘','📕','📗','📙'];
+
+const getBookmoji = (index, current) => {
+	return current ? '📖' : bookmojis[index % 4];
+};
+
+module.exports = { getStatmojis, sortStatmojis, getBookmoji };

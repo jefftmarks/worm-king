@@ -1,9 +1,8 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Book = require('../../models/book');
 const { formatDate } = require('../../utils/utils');
-const { updateUsernames } = require('../../controllers/user')
-
-const BOOKMOJIS = ['📘','📕','📗','📙'];
+const { updateUsernames } = require('../../controllers/user');
+const { getBookmoji } = require('../../utils/emojifier');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -32,7 +31,7 @@ module.exports = {
 			} = books[i];
 	
 			entries.push(`
-🪱${current ? '📖' : BOOKMOJIS[i % 4]}  **${title}**
+🪱${getBookmoji(index, current)}  **${title}**
               by ${author}
               picked by ${picked_by.username} (${formatDate(read_date)})
 			`);

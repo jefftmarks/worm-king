@@ -1,6 +1,9 @@
 const Reading = require('../models/reading');
 const User = require('../models/user');
+const Book = require('../models/book');
 const { fieldsMapToObject, encrypt, decrypt } = require('../utils/utils');
+const { getStatmojis, sortStatmojis } = require('../utils/emojifier');
+const book = require('../models/book');
 
 const createReadingsOnBookCreation = async (book) => {
 	const users = await User.find();
@@ -64,4 +67,66 @@ const printJournal = (reading) => {
 	return formattedEntry
 };
 
-module.exports = { createReadingsOnBookCreation, updateJournalEntry, printJournal };
+const getMyStats = async (user) => {
+	const readings = await Reading.find({ user: user.id }).populate('book');
+
+	readings.sort((a, b) => {
+		return new Date(a.book.read_date) - new Date(b.book.read_date);
+	});
+
+	const entries = [];
+
+	const statmojis = await getStatmojis();
+
+	for (const reading of readings) {
+		entries.push(`${statmojis.get(reading.status)} **${reading.book.title}**`)
+	}
+	
+	return entries.join('\n');
+};
+
+const getClubStats = async () => {
+	const books = await Book.find().sort({ read_date: 'asc' });
+
+	const entries = [];
+	const statmojis = await getStatmojis();
+
+	for (const book of books) {
+		const stats = [];
+		const readings = await Reading.find({ book: book.id });
+
+		for (const reading of readings) {
+			stats.push(statmojis.get(reading.status));
+		}
+		sortedStats = await sortStatmojis(stats);
+
+		entries.push(`
+**${book.title}**
+${sortedStats.join('')}
+		`)
+	}
+
+	return entries.join('');
+}
+
+const getBookStats = async (bookId) => {
+	const readings = await Reading.find({ book: bookId });
+	const stats = [];
+	const statmojis = await getStatmojis();
+
+	for (const reading of readings) {
+		stats.push(statmojis.get(reading.status));
+	}
+	sortedStats = await sortStatmojis(stats);
+
+	return stats.join('');
+};
+
+module.exports = {
+	createReadingsOnBookCreation,
+	updateJournalEntry,
+	printJournal,
+	getMyStats,
+	getClubStats,
+	getBookStats
+};
