@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const User = require('../../models/user');
 const Reading = require('../../models/reading');
-const { getStatmojis } = require('../../utils/emojifier');
+const { getStatmojis, modifyResponse } = require('../../utils/themeHelper');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -24,6 +24,8 @@ module.exports = {
 
 		const wormle = entries.join('');
 
-		await interaction.reply(wormle);
+		const response = await modifyResponse(wormle);
+
+		await interaction.reply(response);
 	},
 };

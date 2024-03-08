@@ -1,10 +1,8 @@
 const fs = require('node:fs');
 const path = require('path');
+const { modifyResponse } = require('../../utils/themeHelper');
 
 const { SlashCommandBuilder } = require('discord.js');
-const Book = require('../../models/book');
-const User = require('../../models/user');
-const { updateUsernames } = require('../../controllers/user');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -29,9 +27,10 @@ module.exports = {
 			}
 		}
 
+		const response = await modifyResponse(entries.join('\n'))
 
 		await interaction.reply({
-			content: entries.join('\n'),
+			content: response,
 			ephemeral: true
 		});
 	},

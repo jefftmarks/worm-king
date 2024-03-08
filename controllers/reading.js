@@ -2,8 +2,7 @@ const Reading = require('../models/reading');
 const User = require('../models/user');
 const Book = require('../models/book');
 const { fieldsMapToObject, encrypt, decrypt } = require('../utils/utils');
-const { getStatmojis, sortStatmojis } = require('../utils/emojifier');
-const book = require('../models/book');
+const { getStatmojis, sortStatmojis } = require('../utils/themeHelper');
 
 const createReadingsOnBookCreation = async (book) => {
 	const users = await User.find();
@@ -111,6 +110,7 @@ ${sortedStats.join('')}
 
 const getBookStats = async (bookId) => {
 	const readings = await Reading.find({ book: bookId });
+	const book = await Book.findById(bookId);
 	const stats = [];
 	const statmojis = await getStatmojis();
 
@@ -119,7 +119,10 @@ const getBookStats = async (bookId) => {
 	}
 	sortedStats = await sortStatmojis(stats);
 
-	return stats.join('');
+	return `
+**${book.title}**
+${stats.join('')}
+	`
 };
 
 module.exports = {

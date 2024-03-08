@@ -7,7 +7,7 @@ const { createBook } = require('./controllers/book');
 const { createUser } = require('./controllers/user');
 const { updateJournalEntry, printJournal } = require('./controllers/reading');
 const User = require('./models/user');
-const Theme = require('./models/theme');
+const { modifyResponse } = require('./utils/themeHelper');
  
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -66,7 +66,9 @@ client.on(Events.InteractionCreate, async interaction => {
 						await interaction.reply({ content: 'ERROR!'});
 					}
 
-					await interaction.reply({ content: `**${book.title}** successfully created!`});
+					const bookResponse = await modifyResponse(`**${book.title}** successfully created!`);
+
+					await interaction.reply({ content: bookResponse});
 					break;
 				case "createUser":
 					const user = await createUser(interaction.fields.fields);
@@ -75,16 +77,20 @@ client.on(Events.InteractionCreate, async interaction => {
 						await interaction.reply({ content: 'ERROR!'});
 					}
 
-					await interaction.reply({ content: `**${user.username}** successfully created!`});
+					const userResponse = await modifyResponse(`**${user.username}** successfully created!`);
+
+					await interaction.reply({ content: userResponse });
 					break;
 				case "updateJournal":
 					const reading = await updateJournalEntry(interaction.fields.fields);
+
+					const journalResponse = await modifyResponse(printJournal(reading));
 
 					if (!reading) {
 						await interaction.reply({ content: 'ERROR!'});
 					}
 
-					await interaction.reply({ content: printJournal(reading), ephemeral: true });
+					await interaction.reply({ content: journalResponse, ephemeral: true });
 					break;
 				default:
 					interaction.reply("ERROR!");

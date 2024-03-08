@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Book = require('../../models/book');
 const { updateUsernames } = require('../../controllers/user');
+const { modifyResponse } = require('../../utils/themeHelper');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -17,10 +18,14 @@ module.exports = {
 
 		const { title, author, picked_by } = book;
 
-		await interaction.reply(`
+		const entry = `
 🪱📖  **${title}**
-              by ${author}
-              picked by ${picked_by.username}
-		`);
+			 by ${author}
+			 picked by ${picked_by.username}
+		`
+
+		const response = await modifyResponse(entry);
+
+		await interaction.reply(response);
 	},
 };

@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const Book = require('../../models/book');
 const { formatDate } = require('../../utils/utils');
 const { updateUsernames } = require('../../controllers/user');
-const { getBookmoji } = require('../../utils/emojifier');
+const { getBookmoji, modifyResponse } = require('../../utils/themeHelper');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -31,12 +31,14 @@ module.exports = {
 			} = books[i];
 	
 			entries.push(`
-🪱${getBookmoji(index, current)}  **${title}**
+🪱${getBookmoji(i, current)}  **${title}**
               by ${author}
               picked by ${picked_by.username} (${formatDate(read_date)})
 			`);
 		}
 
-		await interaction.reply(entries.join(''));
+		const response = await modifyResponse(entries.join(''));
+
+		await interaction.reply(response);
 	},
 };

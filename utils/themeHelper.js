@@ -1,5 +1,5 @@
 const Theme = require('../models/theme');
-const { fieldsMapToObject } = require('./utils');
+const MODIFIERS = require('./MODIFIERS');
 
 const getStatmojis = async () => {
 	const currentTheme = await Theme.findOne({ current: true });
@@ -34,4 +34,20 @@ const getBookmoji = (index, current) => {
 	return current ? '📖' : bookmojis[index % 4];
 };
 
-module.exports = { getStatmojis, sortStatmojis, getBookmoji };
+const modifyResponse = async (response) => {
+	const theme = await Theme.findOne({ current: true });
+	const modifyType = theme.function;
+
+	if (!modifyType) return response;
+
+	const modifier = MODIFIERS[modifyType];
+	
+	return modifier(response);
+};
+
+module.exports = {
+	getStatmojis,
+	sortStatmojis,
+	getBookmoji,
+	modifyResponse,
+};

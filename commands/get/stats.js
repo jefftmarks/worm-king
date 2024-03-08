@@ -10,11 +10,12 @@ const {
 	getClubStats,
 	getBookStats
 } = require('../../controllers/reading');
+const { modifyResponse } = require('../../utils/themeHelper');
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('stats')
-		.setDescription('Returns your personal reading stats'),
+		.setDescription('Returns reading stats for yourself, the entire club, or a specific book'),
 	async execute(interaction) {
 		const user = await User.findOne({ discord_id: interaction.user.id });
 		const statsSelector = await buildStatsSelector();
@@ -54,7 +55,10 @@ module.exports = {
 					statsResponse = await getBookStats(statsSelection);
 			}
 
-			await i.reply(statsResponse);
-		})
+			const response = await modifyResponse(statsResponse);
+
+			await i.update({ components: []})
+			await i.followUp(response);
+		});
 	},
 };

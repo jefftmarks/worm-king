@@ -1,5 +1,5 @@
 const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('discord.js');
-const { getStatmojis } = require('../utils/emojifier');
+const { getStatmojis } = require('../utils/themeHelper');
 
 const buildBookSelector = async(readings) => {
 	selector = new StringSelectMenuBuilder()

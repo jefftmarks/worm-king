@@ -7,7 +7,7 @@ const {
 	ActionRowBuilder,
 	ComponentType
 } = require('discord.js');
-const { getStatmojis } = require('../../utils/emojifier');
+const { getStatmojis, modifyResponse } = require('../../utils/themeHelper');
 const { updateUsernames } = require('../../controllers/user');
 
 module.exports = {
@@ -89,12 +89,16 @@ module.exports = {
 					await j.reply("ERROR!");
 				}
 
-				await j.update({
-					content: `
+				const entry = `
 ${statmojis.get(selectedStatus)} **${book.title}**, status: ${selectedStatus} 
 
 *🪱 ${phraseMap[selectedStatus]}*
-					`,
+				`
+
+				const response = await modifyResponse(entry);
+
+				await j.update({
+					content: response,
 					components: [],
 					ephemeral: true
 				});
