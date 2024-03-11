@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
-const Theme = require('../../models/theme');
-const { modifyResponse } = require('../../utils/themeHelper');
+const Theme = require('../models/theme');
+const { modifyResponse } = require('../utils/themeHelper');
 
 module.exports = {
 	data: new SlashCommandBuilder()
