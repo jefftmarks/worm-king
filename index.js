@@ -5,6 +5,7 @@ const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { createBook } = require('./controllers/book');
 const { createUser } = require('./controllers/user');
+const { createTheme } = require('./controllers/theme');
 const { updateJournalEntry, printJournal } = require('./controllers/reading');
 const User = require('./models/user');
 const { modifyResponse } = require('./utils/themeHelper');
@@ -67,7 +68,7 @@ client.on(Events.InteractionCreate, async interaction => {
 					const book = await createBook(interaction.fields.fields);
 
 					if (!book) {
-						await interaction.reply({ content: 'ERROR!'});
+						await interaction.reply({ content: 'ERROR!', ephemeral: true });
 					}
 
 					const bookResponse = await modifyResponse(`**${book.title}** successfully created!`);
@@ -78,12 +79,23 @@ client.on(Events.InteractionCreate, async interaction => {
 					const user = await createUser(interaction.fields.fields);
 
 					if (!user) {
-						await interaction.reply({ content: 'ERROR!'});
+						await interaction.reply({ content: 'ERROR!', ephemeral: true });
 					}
 
 					const userResponse = await modifyResponse(`**${user.username}** successfully created!`);
 
 					await interaction.reply({ content: userResponse });
+					break;
+				case "createTheme":
+					const theme = await createTheme(interaction.fields.fields);
+
+					if (!theme) {
+						await interaction.reply({ content: 'ERROR!', ephemeral: true });
+					}
+
+					const themeResponse = await modifyResponse(`**${theme.name}** theme successfully created!`);
+
+					await interaction.reply({ content: themeResponse, ephemeral: true });
 					break;
 				case "updateJournal":
 					const reading = await updateJournalEntry(interaction.fields.fields);
@@ -91,13 +103,13 @@ client.on(Events.InteractionCreate, async interaction => {
 					const journalResponse = await modifyResponse(printJournal(reading));
 
 					if (!reading) {
-						await interaction.reply({ content: 'ERROR!'});
+						await interaction.reply({ content: 'ERROR!', ephemeral: true });
 					}
 
 					await interaction.reply({ content: journalResponse, ephemeral: true });
 					break;
 				default:
-					interaction.reply("ERROR!");
+					interaction.reply({ content: 'ERROR!', ephemeral: true });
 			}
 	}
 });

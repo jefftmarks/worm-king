@@ -18,7 +18,7 @@ const ThemeSchema = new mongoose.Schema({
 	current: {
 		type: Boolean,
 		required: true,
-		default: true
+		default: false
 	},
 	emojis: {
 		type: Map,
