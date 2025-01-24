@@ -90,7 +90,7 @@ const getClubStats = async () => {
 	const entries = [];
 	const statmojis = await getStatmojis();
 
-	for (const book of books) {
+	for (const book of books.slice(-5)) {
 		const stats = [];
 		const readings = await Reading.find({ book: book.id });
 
