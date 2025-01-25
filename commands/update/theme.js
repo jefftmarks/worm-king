@@ -8,6 +8,7 @@ const {
 const buildThemeSelector = require('../../components/theme-selector');
 const { updateUsernames } = require('../../controllers/user')
 const { modifyResponse } = require('../../utils/themeHelper');
+const { refreshClubStatsCache } = require('../../controllers/reading');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -47,7 +48,9 @@ module.exports = {
 			await i.update({
 				content: response,
 				components: []
-			})
+			});
+
+			await refreshClubStatsCache();
 		});
 	},
 };

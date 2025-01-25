@@ -9,6 +9,7 @@ const { createTheme } = require('./controllers/theme');
 const { updateJournalEntry, printJournal } = require('./controllers/reading');
 const User = require('./models/user');
 const { modifyResponse } = require('./utils/themeHelper');
+const { refreshClubStatsCache } = require('./controllers/reading')
  
 const client = new Client({
 	intents: [
@@ -74,6 +75,7 @@ client.on(Events.InteractionCreate, async interaction => {
 					const bookResponse = await modifyResponse(`**${book.title}** successfully created!`);
 
 					await interaction.reply({ content: bookResponse});
+					await refreshClubStatsCache();
 					break;
 				case "createUser":
 					const user = await createUser(interaction.fields.fields);
@@ -85,6 +87,7 @@ client.on(Events.InteractionCreate, async interaction => {
 					const userResponse = await modifyResponse(`**${user.username}** successfully created!`);
 
 					await interaction.reply({ content: userResponse });
+					await refreshClubStatsCache();
 					break;
 				case "createTheme":
 					const theme = await createTheme(interaction.fields.fields);
@@ -96,6 +99,7 @@ client.on(Events.InteractionCreate, async interaction => {
 					const themeResponse = await modifyResponse(`**${theme.name}** theme successfully created!`);
 
 					await interaction.reply({ content: themeResponse, ephemeral: true });
+					await refreshClubStatsCache();
 					break;
 				case "updateJournal":
 					const reading = await updateJournalEntry(interaction.fields.fields);
@@ -116,7 +120,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
 client.once(Events.ClientReady, async c => {
 	await connectDB(process.env.MONGO_URI);
-	
+
 	console.log('Worm king is now online: ' + c.user.tag);
 });
 

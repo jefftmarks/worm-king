@@ -1,6 +1,7 @@
 const Reading = require('../models/reading');
 const User = require('../models/user');
 const Book = require('../models/book');
+const Stat = require('../models/stat');
 const { fieldsMapToObject, encrypt, decrypt } = require('../utils/utils');
 const { getStatmojis, sortStatmojis } = require('../utils/themeHelper');
 
@@ -84,13 +85,13 @@ const getMyStats = async (user) => {
 	return entries.join('\n');
 };
 
-const getClubStats = async () => {
+const refreshClubStatsCache = async () => {
 	const books = await Book.find().sort({ read_date: 'asc' });
 
 	const entries = [];
 	const statmojis = await getStatmojis();
 
-	for (const book of books.slice(-5)) {
+	for (const book of books) {
 		const stats = [];
 		const readings = await Reading.find({ book: book.id });
 
@@ -99,13 +100,10 @@ const getClubStats = async () => {
 		}
 		sortedStats = await sortStatmojis(stats);
 
-		entries.push(`
-**${book.title}**
-${sortedStats.join('')}
-		`)
+		entries.push(`**${book.title}**\n${sortedStats.join('')}`)
 	}
 
-	return entries.join('');
+	await Stat.findOneAndUpdate({ name: 'club' }, { cache: entries.join('\n') });
 }
 
 const getBookStats = async (bookId) => {
@@ -130,6 +128,6 @@ module.exports = {
 	updateJournalEntry,
 	printJournal,
 	getMyStats,
-	getClubStats,
+	refreshClubStatsCache,
 	getBookStats
 };

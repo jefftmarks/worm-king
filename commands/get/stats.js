@@ -4,10 +4,11 @@ const {
 	ComponentType
 } = require('discord.js');
 const User = require('../../models/user');
+const Stat = require('../../models/stat');
 const buildStatsSelector = require('../../components/stats-selector');
 const {
 	getMyStats,
-	getClubStats,
+	refreshClubStatsCache,
 	getBookStats
 } = require('../../controllers/reading');
 const { modifyResponse } = require('../../utils/themeHelper');
@@ -49,7 +50,8 @@ module.exports = {
 					statsResponse = await getMyStats(user);
 					break;
 				case 'clubStats':
-					statsResponse = await getClubStats();
+					 const stat = await Stat.findOne({ name: 'club' })
+					 statsResponse = stat.cache
 					break;
 				default:
 					statsResponse = await getBookStats(statsSelection);

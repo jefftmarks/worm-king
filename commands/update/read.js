@@ -9,6 +9,7 @@ const {
 } = require('discord.js');
 const { getStatmojis, modifyResponse } = require('../../utils/themeHelper');
 const { updateUsernames } = require('../../controllers/user');
+const { refreshClubStatsCache } = require('../../controllers/reading');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -102,6 +103,8 @@ ${statmojis.get(selectedStatus)} **${book.title}**, status: ${selectedStatus}
 					components: [],
 					ephemeral: true
 				});
+
+				await refreshClubStatsCache();
 			});
 		});
 	},
