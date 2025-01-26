@@ -8,10 +8,9 @@ const Stat = require('../../models/stat');
 const buildStatsSelector = require('../../components/stats-selector');
 const {
 	getMyStats,
-	refreshClubStatsCache,
 	getBookStats
 } = require('../../controllers/reading');
-const { modifyResponse } = require('../../utils/themeHelper');
+const { modify } = require('../../utils/themeHelper');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -57,7 +56,7 @@ module.exports = {
 					statsResponse = await getBookStats(statsSelection);
 			}
 
-			const response = await modifyResponse(statsResponse);
+			const response = await modify(statsResponse, "response");
 
 			await i.update({ components: []})
 			await i.followUp(response);

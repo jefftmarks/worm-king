@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Book = require('../../models/book');
 const { updateUsernames } = require('../../controllers/user');
-const { modifyResponse } = require('../../utils/themeHelper');
+const { modify } = require('../../utils/themeHelper');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -24,7 +24,7 @@ module.exports = {
 			 picked by ${picked_by.username}
 		`
 
-		const response = await modifyResponse(entry);
+		const response = await modify(entry, "response");
 
 		await interaction.reply(response);
 	},

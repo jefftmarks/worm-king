@@ -8,7 +8,7 @@ const { createUser } = require('./controllers/user');
 const { createTheme } = require('./controllers/theme');
 const { updateJournalEntry, printJournal } = require('./controllers/reading');
 const User = require('./models/user');
-const { modifyResponse } = require('./utils/themeHelper');
+const { modify } = require('./utils/themeHelper');
 const { refreshClubStatsCache } = require('./controllers/reading')
  
 const client = new Client({
@@ -72,7 +72,7 @@ client.on(Events.InteractionCreate, async interaction => {
 						await interaction.reply({ content: 'ERROR!', ephemeral: true });
 					}
 
-					const bookResponse = await modifyResponse(`**${book.title}** successfully created!`);
+					const bookResponse = await modify(`**${book.title}** successfully created!`, "response");
 
 					await interaction.reply({ content: bookResponse});
 					await refreshClubStatsCache();
@@ -84,7 +84,7 @@ client.on(Events.InteractionCreate, async interaction => {
 						await interaction.reply({ content: 'ERROR!', ephemeral: true });
 					}
 
-					const userResponse = await modifyResponse(`**${user.username}** successfully created!`);
+					const userResponse = await modify(`**${user.username}** successfully created!`, "response");
 
 					await interaction.reply({ content: userResponse });
 					await refreshClubStatsCache();
@@ -96,15 +96,14 @@ client.on(Events.InteractionCreate, async interaction => {
 						await interaction.reply({ content: 'ERROR!', ephemeral: true });
 					}
 
-					const themeResponse = await modifyResponse(`**${theme.name}** theme successfully created!`);
+					const themeResponse = await modify(`**${theme.name}** theme successfully created!`, "response");
 
 					await interaction.reply({ content: themeResponse, ephemeral: true });
-					await refreshClubStatsCache();
 					break;
 				case "updateJournal":
 					const reading = await updateJournalEntry(interaction.fields.fields);
 
-					const journalResponse = await modifyResponse(printJournal(reading));
+					const journalResponse = await modify(printJournal(reading), "response");
 
 					if (!reading) {
 						await interaction.reply({ content: 'ERROR!', ephemeral: true });
@@ -116,6 +115,7 @@ client.on(Events.InteractionCreate, async interaction => {
 					interaction.reply({ content: 'ERROR!', ephemeral: true });
 			}
 	}
+	await refreshClubStatsCache();
 });
 
 client.once(Events.ClientReady, async c => {

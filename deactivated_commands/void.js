@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const Theme = require('../models/theme');
-const { modifyResponse } = require('../utils/themeHelper');
+const { modify } = require('../utils/themeHelper');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -14,7 +14,7 @@ module.exports = {
 	async execute(interaction) {
 		const msg = interaction.options.getString('msg')
 
-		const response = await modifyResponse(msg);
+		const response = await modify(msg, "response");
 
 		await interaction.reply(response);
 	},

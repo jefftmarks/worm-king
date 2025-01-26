@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const path = require('path');
-const { modifyResponse } = require('../../utils/themeHelper');
+const { modify } = require('../../utils/themeHelper');
 
 const { SlashCommandBuilder } = require('discord.js');
 
@@ -27,7 +27,7 @@ module.exports = {
 			}
 		}
 
-		const response = await modifyResponse(entries.join('\n'))
+		const response = await modify(entries.join('\n'), "response");
 
 		await interaction.reply({
 			content: response,

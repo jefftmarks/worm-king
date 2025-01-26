@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const Book = require('../../models/book');
 const { formatDate } = require('../../utils/utils');
 const { updateUsernames } = require('../../controllers/user');
-const { getBookmoji, modifyResponse } = require('../../utils/themeHelper');
+const { getBookmoji, modify } = require('../../utils/themeHelper');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -37,7 +37,7 @@ module.exports = {
 			`);
 		}
 
-		const response = await modifyResponse(entries.join(''));
+		const response = await modify(entries.join(''), "response");
 
 		await interaction.reply(response);
 	},

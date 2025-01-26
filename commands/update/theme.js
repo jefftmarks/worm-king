@@ -7,7 +7,7 @@ const {
 } = require('discord.js');
 const buildThemeSelector = require('../../components/theme-selector');
 const { updateUsernames } = require('../../controllers/user')
-const { modifyResponse } = require('../../utils/themeHelper');
+const { modify } = require('../../utils/themeHelper');
 const { refreshClubStatsCache } = require('../../controllers/reading');
 
 module.exports = {
@@ -40,8 +40,8 @@ module.exports = {
 			newTheme = await Theme.findOneAndUpdate({ name: i.values[0]}, { current: true });
 			themeName = newTheme.name[0].toUpperCase() + newTheme.name.slice(1);
 
-			const response = await modifyResponse(
-				`${user.username} updated the theme to ${themeName} ${newTheme.icon}`
+			const response = await modify(
+				`${user.username} updated the theme to ${themeName} ${newTheme.icon}`, "response"
 			);
 
 			collector.stop();;

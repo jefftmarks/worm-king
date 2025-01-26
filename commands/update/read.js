@@ -7,7 +7,7 @@ const {
 	ActionRowBuilder,
 	ComponentType
 } = require('discord.js');
-const { getStatmojis, modifyResponse } = require('../../utils/themeHelper');
+const { getStatmojis, modify } = require('../../utils/themeHelper');
 const { updateUsernames } = require('../../controllers/user');
 const { refreshClubStatsCache } = require('../../controllers/reading');
 
@@ -96,7 +96,7 @@ ${statmojis.get(selectedStatus)} **${book.title}**, status: ${selectedStatus}
 *🪱 ${phraseMap[selectedStatus]}*
 				`
 
-				const response = await modifyResponse(entry);
+				const response = await modify(entry, "response");
 
 				await j.update({
 					content: response,

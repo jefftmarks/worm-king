@@ -7,8 +7,8 @@ const getStatmojis = async () => {
 	return currentTheme.emojis;
 };
 
-const sortStatmojis = async (emojis) => {
-	const rank = await buildEmojiRanker();
+const sortStatmojis = async (emojis, theme) => {
+	const rank = await buildEmojiRanker(theme);
 
 	emojis.sort((a, b) => {
 		return rank[b] - rank[a]
@@ -17,14 +17,14 @@ const sortStatmojis = async (emojis) => {
 	return emojis;
 };
 
-const buildEmojiRanker = async () => {
+const buildEmojiRanker = async (theme) => {
 	const statmojis = await getStatmojis();
-	const rankMap = {}
+	const rankMap = MODIFIERS[theme.function]?.rankMap || {};
 
 	rankMap[statmojis.get('unread')] = 0;
 	rankMap[statmojis.get('started')] = 1;
 	rankMap[statmojis.get('finished')] = 2;
-	
+
 	return rankMap;
 };
 
@@ -34,20 +34,30 @@ const getBookmoji = (index, current) => {
 	return current ? '📖' : bookmojis[index % 4];
 };
 
-const modifyResponse = async (response) => {
-	const theme = await Theme.findOne({ current: true });
-	const modifyType = theme.function;
+const modify = async (input, inputType, theme = null) => {
+	if (theme === null) {
+		theme = await Theme.findOne({ current: true });
+	}
+	const modifyGroup = theme.function;
 
-	if (!modifyType) return response;
+	if (modifyGroup === undefined || modifyGroup === null) {
+		return input;
+	}
 
-	const modifier = MODIFIERS[modifyType];
-	
-	return modifier(response);
+	const modifier = MODIFIERS[modifyGroup][inputType];
+
+	if (modifier === undefined || modifier === null) {
+		return input
+	}
+
+	return modifier(input);
 };
+
+
 
 module.exports = {
 	getStatmojis,
 	sortStatmojis,
 	getBookmoji,
-	modifyResponse,
+	modify,
 };
