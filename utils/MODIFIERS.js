@@ -7,17 +7,20 @@ module.exports = MODIFIERS = {
 	uncertaintyPrinciple: {
 		statmoji: (statmoji) => {
 			const mirror = {
-				'🟥': '⏰',
-				'🟨': '🍋',
-				'🟩': '🐸'
+				'🟥': Math.random() < 0.5 ? '⏰' : '🏓',
+				'🟨': Math.random() < 0.5 ? '🍋' : '🧀',
+				'🟩': Math.random() < 0.5 ? '🐸' : '🧩'
 			}
 
-			return Math.floor(Math.random() * 100) === 50 ? mirror[statmoji] : statmoji;
+			return Math.random() < 0.05 ? mirror[statmoji] : statmoji;
 		},
 		rankMap: {
 			'⏰': 0,
+			'🏓': 0,
 			'🍋': 1,
-			'🐸': 2
+			'🧀': 1,
+			'🐸': 2,
+			'🧩': 2
 		}
 	}
 };
